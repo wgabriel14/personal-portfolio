@@ -1,0 +1,166 @@
+---
+title: "VoIP Troubleshooting Guide for L2 Engineers"
+date: "2025-06-10"
+excerpt: "A systematic methodology for diagnosing VoIP call quality issues — from one-way audio and choppy calls to registration failures — covering SIP, RTP, QoS, and network layer root causes."
+tags: ["VoIP", "SIP", "Networking", "Troubleshooting", "QoS"]
+draft: false
+---
+
+# VoIP Troubleshooting Guide for L2 Engineers
+
+After years of deploying and supporting VoIP systems on platforms like BroadSoft and BICOM, I've developed a systematic approach to diagnosing call quality issues. This guide covers the most common problems you'll encounter at L2 support — and the exact commands and captures you need to solve them fast.
+
+## The Golden Rule: Start at Layer 1
+
+Before you look at SIP traces or RTP streams, verify the basics. I can't count how many "VoIP issues" turned out to be a flapping interface, a duplex mismatch, or a failing PoE switch port.
+
+```bash
+# Check interface errors (on Cisco IOS)
+show interfaces GigabitEthernet0/1 | include errors|duplex|speed
+
+# Check switch port for the IP phone
+show mac address-table | include [phone-mac]
+show spanning-tree interface GigabitEthernet0/1
+```
+
+## SIP: Understanding the Handshake
+
+Every VoIP call begins with SIP signaling. When a call fails, SIP tells you exactly why — if you know how to read it.
+
+### Common SIP Response Codes
+
+| Code | Meaning | Common Cause |
+|------|---------|--------------|
+| 401/407 | Unauthorized | Wrong credentials |
+| 403 | Forbidden | Account disabled or locked |
+| 404 | Not Found | Wrong extension/DID |
+| 408 | Request Timeout | Network unreachable |
+| 486 | Busy Here | Endpoint busy |
+| 503 | Service Unavailable | Server overloaded |
+
+### Capturing SIP with Wireshark
+
+SIP runs on UDP/5060 (or TCP/5061 for TLS). Filter your capture:
+
+```
+sip or rtp
+```
+
+For a call flow, use:
+```
+sip.Call-ID == "call-id-from-logs"
+```
+
+Look at `Statistics → Flow Graph` for a visual ladder diagram of the INVITE → 180 Ringing → 200 OK → ACK sequence.
+
+## One-Way Audio: The Classic Problem
+
+One-way audio (you can hear them, they can't hear you, or vice versa) is almost always an RTP issue, not SIP. RTP is the actual audio stream — SIP just negotiates it.
+
+### Root Causes of One-Way Audio
+
+**1. NAT Traversal Failure**
+
+The most common cause. The SIP INVITE carries the private IP in the SDP body:
+```
+c=IN IP4 192.168.1.100  ← private IP, useless through NAT
+m=audio 12000 RTP/AVP 0
+```
+
+The remote party tries to send audio to 192.168.1.100 — unreachable from outside your network.
+
+**Fix:** Configure NAT on your SBC/gateway, or use STUN/TURN. On BroadSoft, check the `External Address` configuration in Device Management.
+
+**2. Asymmetric Firewall Rules**
+
+Your firewall allows outbound RTP but drops inbound responses. RTP uses a random high UDP port range (10000–20000 typically). Many firewalls inspect SIP to dynamically open the negotiated ports — but only if SIP ALG is working correctly.
+
+Check: is SIP ALG enabled? On many consumer-grade routers, SIP ALG is more harmful than helpful and should be disabled.
+
+**3. VLAN/QoS Misconfiguration**
+
+Voice VLAN traffic being dropped at a QoS policy boundary.
+
+## Choppy / Robotic Audio: RTP and QoS
+
+Choppy audio usually indicates packet loss or jitter. Target values:
+- Packet loss: **&lt; 1%**
+- Jitter: **< 30ms**
+- Latency (one-way): **< 150ms**
+
+### Measuring with MOS Score
+
+Modern platforms calculate MOS (Mean Opinion Score) automatically. A score above 4.0 is excellent; below 3.5 is noticeable degradation.
+
+On BroadSoft, pull call records from the CDR database:
+```sql
+SELECT called_party, calling_party, start_time, duration,
+       rx_mos_cqe, tx_mos_cqe, rx_packet_loss, tx_packet_loss
+FROM cdr_calls
+WHERE start_time > NOW() - INTERVAL 1 HOUR
+ORDER BY rx_mos_cqe ASC
+LIMIT 50;
+```
+
+### QoS: Marking and Queuing
+
+VoIP traffic must be marked **DSCP EF (46)** and placed in a priority queue. Verify marks are being set and honored:
+
+```bash
+# On Cisco IOS, verify QoS policy
+show policy-map interface GigabitEthernet0/1
+
+# Check if DSCP marks are being honored
+show ip access-lists VOIP-MARK
+```
+
+On Meraki, set QoS rules under `Security & SD-WAN → Traffic Shaping`:
+- Enable WAN traffic shaping
+- Create a rule for DSCP EF → Priority: High
+- Set bandwidth limit for voice VLAN
+
+## Registration Failures
+
+If phones won't register, work through this checklist:
+
+1. **Network connectivity** — can the phone ping the SIP server?
+2. **DNS resolution** — is the SIP domain resolving correctly?
+3. **Credentials** — username, password, and auth realm correct?
+4. **Firewall ports** — UDP 5060 and RTP range open?
+5. **Time sync** — SIP authentication uses timestamps; if the phone's clock is off by >30 seconds, 401 loops
+6. **TLS certificates** — if using TLS/SRTP, is the cert valid and trusted?
+
+## PRTG Monitoring for VoIP Infrastructure
+
+For ongoing health monitoring, I set up PRTG sensors on:
+- SIP trunk registration status (HTTP API to BroadSoft)
+- Concurrent call count (SNMP from the SBC)
+- MOS score average per hour (parsed from CDRs)
+- Gateway CPU and memory (SNMP)
+
+Alert thresholds:
+- MOS < 3.8 → Warning
+- MOS < 3.5 → Critical
+- Registration failures > 5/min → Critical
+
+## Quick Reference: Troubleshooting Decision Tree
+
+```
+Call fails immediately?
+  └─ Check SIP response code → credentials, registration, routing
+
+Call connects but no audio?
+  └─ Check NAT/firewall → SDP body → RTP path
+
+Audio is choppy?
+  └─ Check jitter/loss → QoS policy → bandwidth utilization
+
+Random disconnects?
+  └─ Check SIP keepalives (OPTIONS) → TCP timeout → NAT binding timeout
+```
+
+---
+
+This methodology has helped me resolve hundreds of VoIP tickets efficiently. The key is working systematically from the network layer up — don't jump to SIP before you've checked Layer 1.
+
+*Questions about a specific VoIP issue you're seeing? [Let me know.](/contact)*

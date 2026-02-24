@@ -1,0 +1,143 @@
+---
+title: "Automating Network Deployments with the Cisco Meraki API"
+date: "2025-08-20"
+excerpt: "How I reduced multi-site Meraki network provisioning from 4 hours to under 10 minutes using Python, the Meraki Dashboard API, and configuration templates."
+tags: ["Networking", "Python", "Meraki", "Automation", "API"]
+draft: false
+---
+
+# Automating Network Deployments with the Cisco Meraki API
+
+Every time I provisioned a Meraki network manually, I thought: "there has to be a better way." After the fifth time configuring VLANs, firewall rules, and SSIDs for a multi-site deployment, I finally wrote the automation. Here's what I built and why it works.
+
+## The Problem: Manual Provisioning at Scale
+
+A typical enterprise Meraki deployment involves:
+- Creating and configuring a network in Dashboard
+- Binding it to a config template (if you're smart)
+- Claiming and provisioning devices
+- Configuring VLANs, firewall rules, and port schedules
+- Setting up MX uplinks, VPN settings, and traffic shaping
+- Pushing SSIDs and RF profiles for MR access points
+
+For one site, that's 45–90 minutes of clicking through a web UI. For 20 sites? You do the math.
+
+## The Solution: Python + Meraki Dashboard API
+
+Meraki's Dashboard API is genuinely excellent. It's REST-based, well-documented, and has an official Python SDK that abstracts most of the boilerplate.
+
+```python
+import meraki
+
+dashboard = meraki.DashboardAPI(api_key=API_KEY, suppress_logging=True)
+
+# Create a new network
+network = dashboard.organizations.createOrganizationNetwork(
+    organizationId=ORG_ID,
+    name="NewSite-FL-001",
+    productTypes=["appliance", "switch", "wireless"],
+    timeZone="America/New_York",
+    tags=["deployment-2025", "florida"],
+)
+```
+
+### The Deployment Workflow
+
+My automation follows a clean pipeline:
+
+```
+YAML Config → Validate → Create Network → Bind Template → Claim Devices → Configure → Verify
+```
+
+Site configurations live in YAML files that non-engineers can edit:
+
+```yaml
+# sites/miami-001.yaml
+name: "Miami-Office-001"
+timezone: "America/New_York"
+template: "Enterprise-Standard-v2"
+devices:
+  mx: "QXXX-XXXX-XXXX"  # MX68
+  switches:
+    - "QXXX-XXXX-XXXX"  # MS120-8FP
+  aps:
+    - "QXXX-XXXX-XXXX"  # MR36
+vlans:
+  - id: 10
+    name: "Corporate"
+    subnet: "10.10.10.0/24"
+    dhcp: true
+  - id: 20
+    name: "Guest"
+    subnet: "10.10.20.0/24"
+    dhcp: true
+    isolation: true
+```
+
+### Handling Rate Limits
+
+The Meraki API enforces a 10 req/s rate limit per org. The Python SDK handles this automatically if you enable it:
+
+```python
+dashboard = meraki.DashboardAPI(
+    api_key=API_KEY,
+    retry_4xx_error=True,
+    retry_4xx_error_wait_time=2,
+    maximum_retries=5,
+    suppress_logging=True,
+)
+```
+
+For bulk operations across dozens of networks, I add additional backoff:
+
+```python
+import time
+
+def safe_api_call(func, *args, **kwargs):
+    for attempt in range(3):
+        try:
+            return func(*args, **kwargs)
+        except meraki.exceptions.APIError as e:
+            if e.status == 429:
+                time.sleep(2 ** attempt)
+            else:
+                raise
+    raise RuntimeError("Max retries exceeded")
+```
+
+### Flask Web Interface
+
+The CLI tool was useful for me, but the network team needed something they could use without a terminal. I wrapped the automation in a Flask app with a simple form:
+
+- Select organization
+- Upload or fill in site config
+- Preview what will be created
+- Click "Deploy"
+- Watch real-time logs as devices are provisioned
+
+The whole thing runs as an internal tool — no public exposure needed.
+
+## Results
+
+Before automation:
+- Manual provisioning: **3–4 hours/site**
+- Error rate: ~15% (typos, missed config, copy-paste mistakes)
+- Required: senior network engineer
+
+After automation:
+- Automated provisioning: **8–12 minutes/site**
+- Error rate: &lt;1% (YAML validation catches most issues)
+- Required: anyone who can fill out a YAML template
+
+For a 20-site rollout, that's the difference between 80 hours of manual work and an afternoon.
+
+## What's Next
+
+The project is on GitHub (link in the Projects section). Planned improvements:
+- Idempotent re-runs (detect and skip already-configured elements)
+- Terraform provider integration for IaC workflows
+- Webhook-based event-driven provisioning tied to ITSM ticketing
+
+---
+
+*If you're working on similar Meraki automation challenges, I'd love to hear about your approach. [Drop me a message.](/contact)*

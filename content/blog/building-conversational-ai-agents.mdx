@@ -1,0 +1,106 @@
+---
+title: "Building Conversational AI Agents with Vapi and n8n"
+date: "2025-10-15"
+excerpt: "A practical guide to architecting production-ready voice AI agents that handle real customer interactions — from LLM selection to telephony integration and workflow automation."
+tags: ["AI", "Vapi", "n8n", "LLMs", "Automation"]
+draft: false
+---
+
+# Building Conversational AI Agents with Vapi and n8n
+
+Conversational AI has moved from demo toy to production workhorse. In this post I'll walk through how I build voice AI agents at IPFone that handle real enterprise customer interactions — from the initial architecture decision down to the n8n workflows that power the backend logic.
+
+## Why Voice AI Matters for Enterprises
+
+Text-based chatbots have been around for years, but voice changes the equation entirely. When a customer calls about a service outage at 2 AM, they don't want to type. They want to talk to someone — or something — that can resolve their issue immediately.
+
+Voice AI agents built on platforms like Vapi combine:
+- **Natural language understanding** (the LLM)
+- **Speech-to-text / text-to-speech** (real-time, low-latency)
+- **Telephony** (SIP/PSTN integration)
+- **Backend logic** (where n8n comes in)
+
+## The Architecture
+
+Here's the high-level stack I use:
+
+```
+Inbound Call → Vapi (STT + LLM + TTS) → Webhook → n8n Workflow
+                                                        ↓
+                                               CRM / Ticketing / APIs
+```
+
+### Vapi: The Voice Layer
+
+Vapi handles the hard parts of voice: phone number provisioning, real-time transcription, sub-second TTS, and the back-and-forth turn management that makes conversations feel natural.
+
+```javascript
+// Example Vapi assistant configuration
+const assistant = {
+  model: {
+    provider: "openai",
+    model: "gpt-4o",
+    systemPrompt: `You are a technical support agent for IPFone...`,
+    temperature: 0.3,
+  },
+  voice: {
+    provider: "11labs",
+    voiceId: "your-voice-id",
+  },
+  firstMessage: "Thank you for calling IPFone support. How can I help you today?",
+  serverUrl: "https://your-n8n-instance.com/webhook/vapi",
+};
+```
+
+Key settings I always tune:
+- **Temperature:** Keep it low (0.2–0.4) for support agents. You want consistency, not creativity.
+- **System prompt:** Be extremely specific. Define the persona, what the agent can and cannot do, escalation triggers, and output format.
+
+### n8n: The Brain
+
+Vapi can handle a conversation, but it needs a brain to actually *do* things — look up accounts, create tickets, check order status. That's where n8n workflows come in.
+
+When Vapi hits an event (call start, tool call, call end), it fires a webhook to your n8n instance. Your workflow then:
+
+1. Parses the event payload
+2. Queries the relevant API (CRM, ticketing system, etc.)
+3. Returns structured data back to Vapi
+
+```json
+// Example n8n webhook response for a "lookup_account" tool call
+{
+  "results": [
+    {
+      "toolCallId": "call_abc123",
+      "result": "Account found. Customer: Acme Corp. Status: Active. Open tickets: 2."
+    }
+  ]
+}
+```
+
+## Prompt Engineering for Voice
+
+Voice is different from text in important ways:
+
+1. **Keep responses short.** A user can't scroll back. If your agent rambles for 45 seconds, the caller hangs up.
+2. **Use natural speech patterns.** "I'm looking that up for you right now" buys 2 seconds while your webhook fires.
+3. **Design for failure.** What happens when the API is down? When the user gives unexpected input? Always have fallback paths.
+
+## Measuring Production Quality
+
+Before going live, I evaluate agents on:
+
+- **Task completion rate** — did the caller get what they needed?
+- **Escalation rate** — how often does it punt to a human?
+- **Average handle time** — shorter isn't always better, but it's a proxy for efficiency
+- **Sentiment** — Vapi's call logs include transcripts; I run them through a sentiment model weekly
+
+## Conclusion
+
+Voice AI agents are no longer science fiction — they're production infrastructure. The combination of Vapi's low-latency voice stack and n8n's flexible workflow automation lets a small team deploy agents that handle hundreds of concurrent calls.
+
+The key insight: **the LLM is not the hard part.** The hard part is designing the conversation flow, handling edge cases, and integrating reliably with your existing backend systems. Focus your engineering effort there.
+
+---
+
+*Have questions about building voice agents? [Reach out](/contact) — I'm happy to talk architecture.*

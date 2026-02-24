@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cp -r /home/wreyes/portfolio-tmp/. /home/wreyes/personal-portfolio/ 2>&1 && rm -rf /home/wreyes/portfolio-tmp && ls /home/wreyes/personal-portfolio/)",
+      "Bash(npm run build 2>&1)"
+    ]
+  }
+}
