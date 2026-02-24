@@ -1,9 +1,8 @@
 import { Resend } from "resend";
 import type { ContactFormData } from "@/types";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 export async function sendContactEmail(data: ContactFormData) {
+  const resend = new Resend(process.env.RESEND_API_KEY);
   const toEmail = process.env.CONTACT_EMAIL_TO || "reyesmanriquewg@gmail.com";
   const fromEmail =
     process.env.CONTACT_EMAIL_FROM ||
