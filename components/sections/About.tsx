@@ -50,18 +50,19 @@ export default function About() {
           >
             <div className="space-y-4 text-[#a0a0a0] leading-relaxed">
               <p>
-                I&apos;m an Electronics Engineer from Simón Bolívar University with over
-                4 years of hands-on experience bridging enterprise networking and
-                cutting-edge AI automation. My career started deep in network
-                infrastructure — CCNA-certified, deploying Cisco Meraki, Fortinet,
-                and VoIP systems for enterprise clients across Venezuela and the US.
+                I&apos;m an Electronics Engineer from Simón Bolívar University with 5+
+                years of technical experience spanning Python development, enterprise
+                networking, VoIP/SIP, and conversational AI. My career started deep in
+                network infrastructure — CCNA-certified, deploying Cisco Meraki,
+                Fortinet, and VoIP systems for enterprise clients across Venezuela and
+                the US.
               </p>
               <p>
                 As AI transformed the industry, I pivoted toward what excited me most:
-                building intelligent, automated systems. Today I design conversational
-                AI agents, integrate LLMs into business workflows using Vapi and n8n,
-                and automate network operations with Python and the Meraki API — all
-                at IPFone, a leading US cloud communications provider.
+                building intelligent, automated systems. Today I design and deploy
+                LLM-driven agents for inbound support, outbound sales, lead
+                qualification, email outreach and calendar booking — using Retell, n8n,
+                and LLM APIs from OpenAI, Anthropic, and Google.
               </p>
               <p>
                 What sets me apart is the intersection: I understand both the
@@ -77,8 +78,9 @@ export default function About() {
               {[
                 { label: "CCNA Certified", value: "Cisco" },
                 { label: "B.Sc. Electronics Eng.", value: "USB, Venezuela" },
-                { label: "AI Automation", value: "LLMs · n8n · Vapi" },
-                { label: "4+ Years Exp.", value: "Networking & AI" },
+                { label: "AI Automation", value: "LLMs · n8n · Retell" },
+                { label: "5+ Years Exp.", value: "Networking & AI" },
+                { label: "Languages", value: "English · Spanish · German" },
               ].map((item) => (
                 <div
                   key={item.label}

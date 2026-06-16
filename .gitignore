@@ -20,6 +20,17 @@
 .DS_Store
 *.pem
 
+# Personal documents
+*.pdf
+cv-wr-2026.pdf
+
+# Windows metadata
+*.Zone.Identifier
+
+# Screenshots / local media (not for deployment)
+"WhatsApp Image*"
+/public/images/projects/
+
 # debug
 npm-debug.log*
 yarn-debug.log*
