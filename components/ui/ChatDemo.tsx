@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Send, MessageSquare, RotateCcw, Lock } from "lucide-react";
+import { Send, MessageSquare, RotateCcw, Linkedin } from "lucide-react";
 
 interface Message {
   role: "user" | "agent";
@@ -24,6 +24,7 @@ export default function ChatDemo() {
   const [unlocked, setUnlocked] = useState(false);
   const [codeError, setCodeError] = useState("");
   const [codeChecking, setCodeChecking] = useState(false);
+  const [showCodeInput, setShowCodeInput] = useState(false);
 
   useEffect(() => {
     const saved = sessionStorage.getItem(SESSION_KEY);
@@ -139,31 +140,52 @@ export default function ChatDemo() {
   // ── Locked ──
   if (!unlocked) {
     return (
-      <div className="flex flex-col items-center justify-center h-[420px] gap-4 bg-[#141414] border border-[#1e1e1e] rounded-2xl">
+      <div className="flex flex-col items-center justify-center h-[420px] gap-4 bg-[#141414] border border-[#1e1e1e] rounded-2xl px-6">
         <div className="w-16 h-16 rounded-full bg-[#1a1a1a] border border-[#2a2a2a] flex items-center justify-center">
-          <Lock size={26} className="text-[#a0a0a0]" />
+          <Linkedin size={26} className="text-[#a0a0a0]" />
         </div>
-        <p className="text-[#a0a0a0] text-sm text-center">
-          Enter the access code to try the chat demo
+        <p className="text-[#f5f5f5] text-sm font-medium text-center">
+          Want to try the chat demo?
         </p>
-        <form onSubmit={handleUnlock} className="flex flex-col items-center gap-3 w-full max-w-xs px-6">
-          <input
-            type="text"
-            value={accessCode}
-            onChange={(e) => { setAccessCode(e.target.value); setCodeError(""); }}
-            placeholder="Access code"
-            className="w-full px-4 py-2.5 bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl text-[#f5f5f5] text-sm placeholder-[#555] focus:outline-none focus:border-[#00d4ff]/50 text-center tracking-widest"
-            autoComplete="off"
-          />
-          {codeError && <p className="text-red-400 text-xs">{codeError}</p>}
+        <p className="text-[#a0a0a0] text-xs text-center leading-relaxed">
+          Send me a message on LinkedIn and I&apos;ll send you the access code.
+        </p>
+        <a
+          href="https://linkedin.com/in/williams-reyes-0584b91a8"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="w-full max-w-xs py-2.5 bg-[#00d4ff] text-[#0a0a0a] rounded-xl font-medium text-sm hover:bg-[#00d4ff]/90 transition-colors text-center"
+        >
+          Message me on LinkedIn
+        </a>
+        {!showCodeInput ? (
           <button
-            type="submit"
-            disabled={codeChecking || !accessCode.trim()}
-            className="w-full py-2.5 bg-[#00d4ff] text-[#0a0a0a] rounded-xl font-medium text-sm hover:bg-[#00d4ff]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            onClick={() => setShowCodeInput(true)}
+            className="text-[#555] hover:text-[#a0a0a0] text-xs transition-colors"
           >
-            {codeChecking ? "Verifying..." : "Unlock & Start Chat"}
+            Already have the code?
           </button>
-        </form>
+        ) : (
+          <form onSubmit={handleUnlock} className="flex flex-col gap-2 w-full max-w-xs">
+            <input
+              type="text"
+              value={accessCode}
+              onChange={(e) => { setAccessCode(e.target.value); setCodeError(""); }}
+              placeholder="Enter access code"
+              className="w-full px-4 py-2.5 bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl text-[#f5f5f5] text-sm placeholder-[#555] focus:outline-none focus:border-[#00d4ff]/50 text-center tracking-widest"
+              autoComplete="off"
+              autoFocus
+            />
+            {codeError && <p className="text-red-400 text-xs text-center">{codeError}</p>}
+            <button
+              type="submit"
+              disabled={codeChecking || !accessCode.trim()}
+              className="w-full py-2 bg-[#1a1a1a] border border-[#2a2a2a] text-[#a0a0a0] rounded-xl text-sm hover:border-[#00d4ff]/50 hover:text-[#f5f5f5] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {codeChecking ? "Verifying..." : "Start Chat"}
+            </button>
+          </form>
+        )}
       </div>
     );
   }

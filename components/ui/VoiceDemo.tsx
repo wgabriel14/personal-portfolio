@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Mic, PhoneOff, Lock } from "lucide-react";
+import { Mic, PhoneOff, Linkedin } from "lucide-react";
 
 type CallStatus = "idle" | "connecting" | "active" | "ended" | "error";
 
@@ -23,6 +23,7 @@ export default function VoiceDemo() {
   const [unlocked, setUnlocked] = useState(false);
   const [codeError, setCodeError] = useState("");
   const [codeChecking, setCodeChecking] = useState(false);
+  const [showCodeInput, setShowCodeInput] = useState(false);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const retellClientRef = useRef<any>(null);
@@ -203,33 +204,54 @@ export default function VoiceDemo() {
 
         {/* ── Locked state ── */}
         {!unlocked ? (
-          <form onSubmit={handleUnlock} className="flex flex-col items-center gap-4 w-full max-w-xs">
+          <div className="flex flex-col items-center gap-4 w-full max-w-xs">
             <div className="w-20 h-20 rounded-full bg-[#1a1a1a] border border-[#2a2a2a] flex items-center justify-center">
-              <Lock size={28} className="text-[#a0a0a0]" />
+              <Linkedin size={28} className="text-[#a0a0a0]" />
             </div>
-            <p className="text-[#a0a0a0] text-sm text-center">
-              Enter the access code to try the voice demo
+            <p className="text-[#f5f5f5] text-sm font-medium text-center">
+              Want to try the voice demo?
             </p>
-            <input
-              ref={codeInputRef}
-              type="text"
-              value={accessCode}
-              onChange={(e) => { setAccessCode(e.target.value); setCodeError(""); }}
-              placeholder="Access code"
-              className="w-full px-4 py-2.5 bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl text-[#f5f5f5] text-sm placeholder-[#555] focus:outline-none focus:border-[#00d4ff]/50 text-center tracking-widest"
-              autoComplete="off"
-            />
-            {codeError && (
-              <p className="text-red-400 text-xs text-center">{codeError}</p>
-            )}
-            <button
-              type="submit"
-              disabled={codeChecking || !accessCode.trim()}
-              className="w-full py-2.5 bg-[#00d4ff] text-[#0a0a0a] rounded-xl font-medium text-sm hover:bg-[#00d4ff]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            <p className="text-[#a0a0a0] text-xs text-center leading-relaxed">
+              Send me a message on LinkedIn and I&apos;ll send you the access code.
+            </p>
+            <a
+              href="https://linkedin.com/in/williams-reyes-0584b91a8"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full py-2.5 bg-[#00d4ff] text-[#0a0a0a] rounded-xl font-medium text-sm hover:bg-[#00d4ff]/90 transition-colors text-center"
             >
-              {codeChecking ? "Verifying..." : "Unlock & Start Call"}
-            </button>
-          </form>
+              Message me on LinkedIn
+            </a>
+            {!showCodeInput ? (
+              <button
+                onClick={() => setShowCodeInput(true)}
+                className="text-[#555] hover:text-[#a0a0a0] text-xs transition-colors"
+              >
+                Already have the code?
+              </button>
+            ) : (
+              <form onSubmit={handleUnlock} className="flex flex-col gap-2 w-full">
+                <input
+                  ref={codeInputRef}
+                  type="text"
+                  value={accessCode}
+                  onChange={(e) => { setAccessCode(e.target.value); setCodeError(""); }}
+                  placeholder="Enter access code"
+                  className="w-full px-4 py-2.5 bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl text-[#f5f5f5] text-sm placeholder-[#555] focus:outline-none focus:border-[#00d4ff]/50 text-center tracking-widest"
+                  autoComplete="off"
+                  autoFocus
+                />
+                {codeError && <p className="text-red-400 text-xs text-center">{codeError}</p>}
+                <button
+                  type="submit"
+                  disabled={codeChecking || !accessCode.trim()}
+                  className="w-full py-2 bg-[#1a1a1a] border border-[#2a2a2a] text-[#a0a0a0] rounded-xl text-sm hover:border-[#00d4ff]/50 hover:text-[#f5f5f5] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {codeChecking ? "Verifying..." : "Start Call"}
+                </button>
+              </form>
+            )}
+          </div>
 
         ) : status === "idle" || status === "ended" || status === "error" ? (
 

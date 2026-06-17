@@ -21,13 +21,20 @@ export default function Footer() {
 
           {/* Nav */}
           <nav className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
-            {["About", "Skills", "Experience", "Projects", "Blog", "Contact"].map((item) => (
+            {[
+              { label: "About", href: "#about" },
+              { label: "Skills", href: "#skills" },
+              { label: "Experience", href: "#experience" },
+              { label: "Projects", href: "#projects" },
+              { label: "AI Demo", href: "#ai-demo" },
+              { label: "Contact", href: "#contact" },
+            ].map((item) => (
               <a
-                key={item}
-                href={`#${item.toLowerCase()}`}
+                key={item.href}
+                href={item.href}
                 className="text-[#a0a0a0] text-sm hover:text-[#00d4ff] transition-colors"
               >
-                {item}
+                {item.label}
               </a>
             ))}
           </nav>

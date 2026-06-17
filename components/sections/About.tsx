@@ -50,26 +50,23 @@ export default function About() {
           >
             <div className="space-y-4 text-[#a0a0a0] leading-relaxed">
               <p>
-                I&apos;m an Electronics Engineer from Simón Bolívar University with 5+
-                years of technical experience spanning Python development, enterprise
-                networking, VoIP/SIP, and conversational AI. My career started deep in
-                network infrastructure — CCNA-certified, deploying Cisco Meraki,
-                Fortinet, and VoIP systems for enterprise clients across Venezuela and
-                the US.
+                I design and deploy AI agents that handle real business interactions
+                across voice, chat, and email. One production voice agent alone manages
+                1,200+ monthly calls at a 90% success rate: identifying callers,
+                classifying incidents, guiding troubleshooting, flagging emergencies,
+                and opening support tickets automatically. Another set of email agents
+                processed 2,860+ messages in their first month.
               </p>
               <p>
-                As AI transformed the industry, I pivoted toward what excited me most:
-                building intelligent, automated systems. Today I design and deploy
-                LLM-driven agents for inbound support, outbound sales, lead
-                qualification, email outreach and calendar booking — using Retell, n8n,
-                and LLM APIs from OpenAI, Anthropic, and Google.
+                The network engineering foundation is what makes the AI work stick.
+                CCNA-certified with five years deploying Cisco Meraki, Webex Calling,
+                and enterprise VoIP infrastructure, I build on a layer most AI
+                engineers don&apos;t have.
               </p>
               <p>
-                What sets me apart is the intersection: I understand both the
-                technical depth of enterprise networks{" "}
-                <em className="text-[#f5f5f5]">and</em> the practical applications of
-                AI. I can talk protocols with a network engineer and tokens with an AI
-                researcher — and build products that bridge both worlds.
+                I work across both worlds deliberately. I can debug SIP signaling one
+                day and tune a RAG pipeline the next. Electronics Engineering from
+                Simón Bolívar University, fluent in English and Spanish.
               </p>
             </div>
 

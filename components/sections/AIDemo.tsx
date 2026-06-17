@@ -26,7 +26,7 @@ export default function AIDemo() {
           transition={{ duration: 0.5, delay: 0.1 }}
           className="text-center text-[#a0a0a0] text-sm mt-4 mb-12"
         >
-          Powered by Retell AI — same tech I use in production automations
+          Live voice and chat agents built with the same stack I use in production
         </motion.p>
 
         <div className="max-w-2xl mx-auto">

@@ -71,6 +71,11 @@ body {
   }
 }
 
+/* Justified body text */
+p {
+  text-align: justify;
+}
+
 /* Prose overrides for blog */
 .prose pre {
   background: #141414 !important;

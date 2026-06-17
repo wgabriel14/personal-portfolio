@@ -41,9 +41,8 @@ export default function Contact() {
             transition={{ duration: 0.5 }}
             className="text-[#a0a0a0] text-sm leading-relaxed text-center"
           >
-            Open to senior AI automation and networking roles, consulting
-            engagements, and interesting projects. Based remotely — available
-            worldwide.
+            Open to full-time and contract roles in AI automation and networking.
+            Based in Venezuela, available for remote positions worldwide or relocation.
           </motion.p>
 
           <div className="w-full flex flex-col gap-4">

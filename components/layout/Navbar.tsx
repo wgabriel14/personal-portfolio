@@ -11,7 +11,7 @@ const navLinks = [
   { href: "#skills", label: "Skills" },
   { href: "#experience", label: "Experience" },
   { href: "#projects", label: "Projects" },
-  { href: "#blog", label: "Blog" },
+  { href: "#ai-demo", label: "AI Demo" },
   { href: "#contact", label: "Contact" },
 ];
 
@@ -88,18 +88,18 @@ export default function Navbar() {
         {/* Desktop CTA */}
         <div className="hidden md:flex items-center gap-3">
           <Link
-            href={socialLinks.github}
+            href={socialLinks.linkedin}
             target="_blank"
             rel="noopener noreferrer"
             className="text-[#a0a0a0] hover:text-[#00d4ff] transition-colors text-sm"
           >
-            GitHub
+            LinkedIn
           </Link>
           <a
             href={`mailto:${socialLinks.email}`}
             className="px-4 py-1.5 rounded-full border border-[#00d4ff] text-[#00d4ff] text-sm font-medium hover:bg-[#00d4ff]/10 transition-colors"
           >
-            Hire Me
+            Contact Me
           </a>
         </div>
 
@@ -137,7 +137,7 @@ export default function Navbar() {
                 href={`mailto:${socialLinks.email}`}
                 className="inline-block mt-2 px-4 py-2 rounded-full border border-[#00d4ff] text-[#00d4ff] text-sm font-medium hover:bg-[#00d4ff]/10 transition-colors"
               >
-                Hire Me
+                Contact Me
               </a>
             </li>
           </ul>

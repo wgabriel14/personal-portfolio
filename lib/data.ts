@@ -26,10 +26,10 @@ export const experiences: Experience[] = [
     startDate: "2024-05",
     endDate: "2025-07",
     description: [
-      "Level 2 escalation point for VoIP and internet connectivity issues for business clients across BroadSoft, BICOM and Cisco Webex Calling; coordinated with last-mile ISPs for circuit incidents, fully remote in an English-speaking environment under SLA.",
-      "Promoted internally to AI & Network Automation Engineer based on technical performance and programming background, contributing to the company's adoption of conversational AI and workflow automation across client deployments.",
+      "Served as Level 2 escalation point for VoIP technical issues across enterprise platforms including BroadSoft, BICOM, Cisco Webex Calling, Microsoft Teams Phone, and legacy POTS, supporting US-based business clients in a fully English-speaking environment under SLA.",
+      "Diagnosed and resolved complex telephony issues across multiple PBX platforms and phone vendors (Polycom, Yealink, Grandstream), troubleshooting SIP, RTP, codec, and call-quality problems. Also acted as primary contact for client-side internet circuit incidents, coordinating with upstream ISPs and managing technician dispatch lifecycles.",
     ],
-    technologies: ["Cisco Meraki", "Fortinet", "MikroTik", "BroadSoft", "BICOM", "Python", "SIP/RTP", "BGP", "OSPF"],
+    technologies: ["BroadSoft", "BICOM", "Webex Calling", "MS Teams Phone", "SIP/RTP", "Wireshark", "PRTG", "Python"],
   },
   {
     id: "soutec",
@@ -53,7 +53,7 @@ export const projects: Project[] = [
     id: "meraki-automator",
     title: "Meraki Deployment Automator",
     description:
-      "Python/Flask web app on the Cisco Meraki Dashboard API for bulk network provisioning — cutting firewall rule deployment time from 1.5–2.5 hours of manual work to under two minutes (~98% effort reduction). Deployed in production at three enterprise client sites.",
+      "Python/Flask web app on the Cisco Meraki Dashboard API for bulk network provisioning, cutting firewall rule deployment time from 1.5 to 2.5 hours of manual work down to under two minutes (roughly 98% reduction). Deployed in production at three enterprise client sites.",
     technologies: ["Python", "Flask", "Meraki API", "REST", "Jinja2"],
     githubUrl: "https://github.com/wgabriel14",
     status: "live",
@@ -72,7 +72,7 @@ export const projects: Project[] = [
     id: "email-ai-agents",
     title: "AI Email Engagement System",
     description:
-      "Two autonomous outbound email agents deployed in production — one for client outreach, one for partner communications — acting as a branded AI contact channel. Sent 2,860+ emails in the first 30 days, generating 156 replies handled autonomously and 36 successful closings. Built on n8n with Microsoft Azure for email management; AI layer uses Anthropic Claude (OpenAI as fallback) for classification, response generation, and escalation routing across 5+ internal departments with human-in-the-loop handoff. Includes security guardrails, a knowledge base, and a custom monitoring dashboard. Developed using Claude Code with the n8n MCP integration.",
+      "Two autonomous outbound email agents deployed in production: one for client outreach and one for partner communications, acting as a branded AI contact channel. Sent 2,860+ emails in the first 30 days, generating 156 replies handled autonomously and 36 successful closings. Built on n8n with Microsoft Azure for email management; the AI layer uses Anthropic Claude with OpenAI as fallback for classification, response generation, and escalation routing across 5+ internal departments with human-in-the-loop handoff. Includes security guardrails, a knowledge base, and a custom monitoring dashboard. Developed using Claude Code with the n8n MCP integration.",
     technologies: ["n8n", "Anthropic Claude", "OpenAI", "Microsoft Azure", "Agent Orchestration", "Prompt Engineering", "Claude Code + MCP"],
     status: "live",
     featured: true,
@@ -81,7 +81,7 @@ export const projects: Project[] = [
     id: "agent-monitoring-dashboards",
     title: "AI Agent Monitoring Dashboards",
     description:
-      "Two production monitoring dashboards built to track real-time performance of deployed AI agents — one for the voice support agent, one for the email engagement agents. Born from recurring stakeholder requests about agent results: each dashboard surfaces the key metrics that matter (call volume, success rates, reply rates, escalations, closings) and can generate email reports filtered by custom date ranges, sent on demand.",
+      "Two production monitoring dashboards built to track real-time performance of deployed AI agents: one for the voice support agent and one for the email engagement agents. Born from recurring stakeholder requests about results, each dashboard surfaces the metrics that matter (call volume, success rates, reply rates, escalations, closings) and can generate email reports filtered by custom date ranges, sent on demand.",
     technologies: ["n8n", "Python", "REST APIs", "Email Reporting"],
     status: "live",
     featured: true,
@@ -126,6 +126,9 @@ export const skillGroups: SkillGroup[] = [
       "VLANs & QoS",
       "VPN / IPSec",
       "Wireless (802.11)",
+      "Wireshark",
+      "PRTG",
+      "Ekahau",
     ],
   },
   {
@@ -153,9 +156,6 @@ export const skillGroups: SkillGroup[] = [
       "Webex Calling",
       "MS Teams Phone",
       "SIP / RTP",
-      "Wireshark",
-      "PRTG",
-      "Ekahau",
     ],
   },
 ];

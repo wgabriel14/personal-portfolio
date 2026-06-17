@@ -24,7 +24,7 @@ const item = {
 
 export default function Hero() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  const [playing, setPlaying] = useState(true);
+  const [playing, setPlaying] = useState(false);
   const [muted, setMuted] = useState(false);
 
   // useCallback with [] keeps this ref stable across re-renders. Without it, React
@@ -35,7 +35,6 @@ export default function Hero() {
       el.muted = false;
       videoRef.current = el;
       el.addEventListener("ended", () => setPlaying(false));
-      el.play().catch(() => {});
     }
   }, []);
 
@@ -92,7 +91,7 @@ export default function Hero() {
             <motion.div variants={item} className="flex items-center gap-3 mb-6">
               <div className="h-px w-12 bg-[#00d4ff]" />
               <span className="text-[#00d4ff] text-sm font-medium font-heading tracking-widest uppercase">
-                Available for opportunities
+                Venezuela · Open to remote &amp; relocation
               </span>
             </motion.div>
 
@@ -181,23 +180,38 @@ export default function Hero() {
               playsInline
             />
 
-            {/* Video controls */}
-            <div className="absolute bottom-4 right-4 flex items-center gap-2">
-              <button
-                onClick={toggleMute}
-                className="flex items-center justify-center w-10 h-10 rounded-full bg-black/60 border border-white/10 text-white/70 hover:text-white hover:bg-black/80 transition-colors"
-                aria-label={muted ? "Unmute video" : "Mute video"}
-              >
-                {muted ? <VolumeX size={16} /> : <Volume2 size={16} />}
-              </button>
-              <button
-                onClick={togglePlay}
-                className="flex items-center justify-center w-10 h-10 rounded-full bg-black/60 border border-white/10 text-white/70 hover:text-white hover:bg-black/80 transition-colors"
-                aria-label={playing ? "Pause video" : "Play video"}
-              >
-                {playing ? <Pause size={16} /> : <Play size={16} />}
-              </button>
-            </div>
+            {/* Large centered play button — visible when paused */}
+            {!playing && (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <button
+                  onClick={togglePlay}
+                  className="flex items-center justify-center w-20 h-20 rounded-full bg-black/55 border border-white/20 text-white hover:bg-black/75 hover:scale-105 transition-all"
+                  aria-label="Play video"
+                >
+                  <Play size={32} className="ml-1" />
+                </button>
+              </div>
+            )}
+
+            {/* Corner controls — visible when playing */}
+            {playing && (
+              <div className="absolute bottom-4 right-4 flex items-center gap-2">
+                <button
+                  onClick={toggleMute}
+                  className="flex items-center justify-center w-10 h-10 rounded-full bg-black/60 border border-white/10 text-white/70 hover:text-white hover:bg-black/80 transition-colors"
+                  aria-label={muted ? "Unmute video" : "Mute video"}
+                >
+                  {muted ? <VolumeX size={16} /> : <Volume2 size={16} />}
+                </button>
+                <button
+                  onClick={togglePlay}
+                  className="flex items-center justify-center w-10 h-10 rounded-full bg-black/60 border border-white/10 text-white/70 hover:text-white hover:bg-black/80 transition-colors"
+                  aria-label="Pause video"
+                >
+                  <Pause size={16} />
+                </button>
+              </div>
+            )}
           </motion.div>
         </div>
       </div>
